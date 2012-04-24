@@ -1,6 +1,7 @@
 package org.springframework.samples.mvc.fileupload;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 import org.springframework.mvc.extensions.ajax.AjaxUtils;
 import org.springframework.stereotype.Controller;
@@ -26,8 +27,18 @@ public class FileUploadController {
 	}
 
 	@RequestMapping(method=RequestMethod.POST)
-	public void processUpload(@RequestParam MultipartFile file, Model model) throws IOException {
-		model.addAttribute("message", "File '" + file.getOriginalFilename() + "' uploaded successfully");
+	public Callable<Object> processUpload(final @RequestParam MultipartFile file, final Model model) throws IOException {
+
+		return new Callable<Object>() {
+			public Object call() throws Exception {
+
+				// Process input file..
+				Thread.sleep(3000L);
+
+				model.addAttribute("message", "File '" + file.getOriginalFilename() + "' uploaded successfully");
+				return null;
+			}
+		};
 	}
-	
+
 }

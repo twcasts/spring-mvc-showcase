@@ -1,5 +1,7 @@
 package org.springframework.samples.mvc.views;
 
+import java.util.concurrent.Callable;
+
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
@@ -13,12 +15,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class ViewsController {
 
 	@RequestMapping(value="html", method=RequestMethod.GET)
-	public String prepare(Model model) {
-		model.addAttribute("foo", "bar");
-		model.addAttribute("fruit", "apple");
-		return "views/html";
+	public Callable<String> prepare(final Model model) {
+
+		return new Callable<String>() {
+			public String call() throws Exception {
+
+				// Do some work..
+				Thread.sleep(3000L);
+
+				model.addAttribute("foo", "bar");
+				model.addAttribute("fruit", "apple");
+				return "views/html";
+			}
+		};
 	}
-	
+
 	@RequestMapping(value="/viewName", method=RequestMethod.GET)
 	public void usingRequestToViewNameTranslator(Model model) {
 		model.addAttribute("foo", "bar");
@@ -34,7 +45,7 @@ public class ViewsController {
 
 	@RequestMapping(value="dataBinding/{foo}/{fruit}", method=RequestMethod.GET)
 	public String dataBinding(@Valid JavaBean javaBean, Model model) {
-		// JavaBean "foo" and "fruit" properties populated from URI variables 
+		// JavaBean "foo" and "fruit" properties populated from URI variables
 		return "views/dataBinding";
 	}
 

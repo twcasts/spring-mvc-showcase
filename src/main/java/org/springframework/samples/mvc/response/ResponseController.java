@@ -1,5 +1,7 @@
 package org.springframework.samples.mvc.response;
 
+import java.util.concurrent.Callable;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,8 +15,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ResponseController {
 
 	@RequestMapping(value="/response/annotation", method=RequestMethod.GET)
-	public @ResponseBody String responseBody() {
-		return "The String ResponseBody";
+	public @ResponseBody Callable<String> responseBody() {
+
+		return new Callable<String>() {
+			public String call() throws Exception {
+
+				// Do some work..
+				Thread.sleep(3000L);
+
+				return "The String ResponseBody";
+			}
+		};
 	}
 
 	@RequestMapping(value="/response/charset/accept", method=RequestMethod.GET)
@@ -34,11 +45,20 @@ public class ResponseController {
 	}
 
 	@RequestMapping(value="/response/entity/headers", method=RequestMethod.GET)
-	public ResponseEntity<String> responseEntityCustomHeaders() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.TEXT_PLAIN);
-		return new ResponseEntity<String>("The String ResponseBody with custom header Content-Type=text/plain",
-				headers, HttpStatus.OK);
+	public Callable<ResponseEntity<String>> responseEntityCustomHeaders() {
+
+		return new Callable<ResponseEntity<String>>() {
+			public ResponseEntity<String> call() throws Exception {
+
+				// Do some work..
+				Thread.sleep(3000L);
+
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.TEXT_PLAIN);
+				return new ResponseEntity<String>(
+						"The String ResponseBody with custom header Content-Type=text/plain", headers, HttpStatus.OK);
+			}
+		};
 	}
 
 }

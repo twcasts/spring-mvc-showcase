@@ -1,5 +1,7 @@
 package org.springframework.samples.mvc.redirect;
 
+import java.util.concurrent.Callable;
+
 import javax.inject.Inject;
 
 import org.joda.time.LocalDate;
@@ -16,7 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Controller
 @RequestMapping("/redirect")
 public class RedirectController {
-	
+
 	private final ConversionService conversionService;
 
 	@Inject
@@ -25,10 +27,19 @@ public class RedirectController {
 	}
 
 	@RequestMapping(value="/uriTemplate", method=RequestMethod.GET)
-	public String uriTemplate(RedirectAttributes redirectAttrs) {
-		redirectAttrs.addAttribute("account", "a123");  // Used as URI template variable
-		redirectAttrs.addAttribute("date", new LocalDate(2011, 12, 31));  // Appended as a query parameter
-		return "redirect:/redirect/{account}";
+	public Callable<String> uriTemplate(final RedirectAttributes redirectAttrs) {
+
+		return new Callable<String>() {
+			public String call() throws Exception {
+
+				// Do some work..
+				Thread.sleep(3000L);
+
+				redirectAttrs.addAttribute("account", "a123");  // Used as URI template variable
+				redirectAttrs.addAttribute("date", new LocalDate(2011, 12, 31));  // Appended as a query parameter
+				return "redirect:/redirect/{account}";
+			}
+		};
 	}
 
 	@RequestMapping(value="/uriComponentsBuilder", method=RequestMethod.GET)
